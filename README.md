@@ -26,4 +26,17 @@ Then go back to 365 and click on verify:
 ![Connect](./images/connect.png)    
 Choose the Add your own DNS option and get to the Add DNS records screen and since I don't have the Business Basic Standard trial I'll have to get the trial for it to use Exchange so hit continue and add. Shortly after doing this I got the trial. Then assign the license to the admin user and create 2 users with the domain bought and the licenses.    
 ![Users](./images/users.png)    
+And with license added, go back to Settings -> Domains and click on the Cloudflare domain and when doing adding the DNS option, the Exchange information will pop up and finish the setup for it and it should say healthy. 
+Then in Cloudflare for DNS, add several DNS records for information that was created for Exchange and enter it into Cloudflare with the first one as an MX with the MS valeu, second as a TXT with the v=spf info, third as CNAME with it named autodiscover with the content of autodiscover.outlook.com, and the fourth one named as _dmarc with the content having v=DMARC1; p=none rua=mailto:alice@jonmaillab.org; fo=1 and then do nslookups on them all to verify by typing: 
+nslookup -type-MX jon-maillab.org 1.1.1.1   
+nslookup -type=TXT jon-maillab.org 1.1.1.1
+nslookup -type=TXT _dmarc.jon-maillab.org 1.1.1.1   
+nslookup -type-MX jon-maillab.org 1.1.1.1   
+nslookup -type=CNAME autodiscover.jon-maillab.org 1.1.1.1   
+Then go to one of the user accounts, create a password for it, then sign into it, set up MFA and get into email like so:    
+![Outlook](./images/outlook.png)    
+Then I'll send a test message to my email and get it to send to myself. After sending:  
+![Sent](./images/sent.png)  
+Then in Gmail, click on the three dots in the right corner and click on show original.  
+![Email1](./images/01-baseline-all-pass-redacted.png)   
 
