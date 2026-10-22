@@ -147,4 +147,18 @@ Set-DkimSigningConfig failed with "CNAME record does not exist" even though nslo
 The records were correct from the start of the sync delay. I verified this by comparing the targets in Microsoft's error message against my nslookup output character for character, instead of assuming a DNS fault.   
 Then I sent a email from Alice to my again and saw this after clicking on the three dots:   
 ![Enabled](./images/03-dkim-enabled-pass-redacted.png)  
-Now it shows DKIM as working with a PASS for DKIM
+Now it shows DKIM as working with a PASS for DKIM. From Alice, I sent emails to my other outlook emails and a secondary Gmail email as well.    
+![Outlook](./images/04-outlook-com-pass-redacted.png)   
+Second Gmail:   
+![Gmail](./images/05-second-gmail-pass-redacted.png)    
+Internal:   
+![Internal](./images/06-internal-unsigned-redacted.png) 
+With those emails sent and data gotten, its time to go and run a Message trace in Exchange by going to Mail-Flow -> Message trace and see this: 
+![Trace](./images/trace.png)    
+Click on Start a Trace and set the sender to alice@jon-maillist.org with a time range of the past couple days to see the messages sent: 
+![Result](./images/result.png)  
+And from checking the Alice to an external address: 
+![Details](./images/07-message-trace-external-redacted.png) 
+And from checking the Alice to Bob address: 
+![Detail1](./images/08-message-trace-internal-redacted.png) 
+From looking over both is that it needed to confirm a test message from tenant to an outside source. Trace timestamps match up from when i sent them out. Key finding is that external mail ends at Send external with internal ending at Deliver. Takeaway is that trace confirms the handoff with recipient headers confirm authentication and arrival.   
