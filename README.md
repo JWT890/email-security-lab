@@ -162,3 +162,6 @@ And from checking the Alice to an external address:
 And from checking the Alice to Bob address: 
 ![Detail1](./images/08-message-trace-internal-redacted.png) 
 From looking over both is that it needed to confirm a test message from tenant to an outside source. Trace timestamps match up from when i sent them out. Key finding is that external mail ends at Send external with internal ending at Deliver. Takeaway is that trace confirms the handoff with recipient headers confirm authentication and arrival.   
+When looking over the DMARC report from yesterday:  
+![Result1](./images/09-dmarc-report-google-day2-redacted.png) 
+Comparing this to the first DMARC report, DKIM now passes the test and aligned with the domain with everything being legit and no unauthorized sources. Shows that the DKIM is working and functional.
