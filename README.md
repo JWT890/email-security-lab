@@ -164,4 +164,17 @@ And from checking the Alice to Bob address:
 From looking over both is that it needed to confirm a test message from tenant to an outside source. Trace timestamps match up from when i sent them out. Key finding is that external mail ends at Send external with internal ending at Deliver. Takeaway is that trace confirms the handoff with recipient headers confirm authentication and arrival.   
 When looking over the DMARC report from yesterday:  
 ![Result1](./images/09-dmarc-report-google-day2-redacted.png) 
-Comparing this to the first DMARC report, DKIM now passes the test and aligned with the domain with everything being legit and no unauthorized sources. Shows that the DKIM is working and functional.
+Comparing this to the first DMARC report, DKIM now passes the test and aligned with the domain with everything being legit and no unauthorized sources. Shows that the DKIM is working and functional.  
+AFter waiting a day or so, the aggregator shows this: 
+![Result2](./images/10-dmarc-report-outlook-redacted.png) 
+One message from Microsoft's outbound infrastructure to another outlook account with SPF pass, from, DKIM for selector1 and no disposition. Matched header at send time with Microsoft's report format adds envelope_to, envelope_From, and SPF scope which Google doesn't have.  
+
+# SPF Failure Test 
+First lets start by running nslookup -type=TXT jon-maillab.org 1.1.1.1 and should include the line v=spfl include:spf.protection.outlook.com -all.  
+Then go into Cloudflare and edit the TXT record with spfl in it to just v=spf1 -all. After saving, wait a few minutes and run:  
+nslookup -type=TXT jon-maillab.org 1.1.1.1 and nslookup -type=TXT jon-maillab.org 8.8.8.8 which should show as blanks.  
+Then send an email in Outlook after this change, with the email titled SPF break test and send it.  
+![Result3](./images/11-spf-fail-dmarc-pass-redacted.png)  
+With the change to v=spf1 -all, it shows that spf failed and when fixed back in Cloudflare: 
+![Result4](./images/12-spf-restored-pass-redacted.png)  
+The fix should also be seen when running nslookup -type=TXT jon-maillab.org 1.1.1.1 with v=spfl restored. 
