@@ -178,3 +178,20 @@ Then send an email in Outlook after this change, with the email titled SPF break
 With the change to v=spf1 -all, it shows that spf failed and when fixed back in Cloudflare: 
 ![Result4](./images/12-spf-restored-pass-redacted.png)  
 The fix should also be seen when running nslookup -type=TXT jon-maillab.org 1.1.1.1 with v=spfl restored. 
+
+# DKIM break test
+For this, something to remember is that if CNAME disappers, those that receive emails will still see a signature but no key. Before breaking run nslookup -type=CNAME selector1._domainkey.jon-maillab.org 1.1.1.1 which will show the selector1 and domain key for the domain. 
+Then go into into Cloudflare and delete the selecto1 key. Then after a few minutes run: 
+nslookup -type=CNAME selector1._domainkey.jon-maillab.org 1.1.1.1 
+nslookup -type=CNAME selector1._domainkey.jon-maillab.org 8.8.8.8 
+In which the output should say that 1.1.1.1 and dns.google can't find selector1 and that its non-existent.  
+Then send an email from Alice with the subject of DKIM break test:  
+![Result5](./images/13-dkim-break-redacted.png) 
+Then re-add the selector1 part back into Cloudflare and after readding since the root cause was the selector1 CNAME being deleted: 
+![Result6](./images/14-dkim-after-restore-redacted.png) 
+Something to see is that it says Fail for DKIM. Probably best to wait a few minutes before retrying.  
+After retrying from Alice:  
+![Result7](./images/16-dkim-retest-pass-redacted.png) 
+With this one of the key lookup error, it was caused by some cache i guess or just took a few minutes and I didn't wait for it to reset for a few minutes.
+
+# Spoof test
