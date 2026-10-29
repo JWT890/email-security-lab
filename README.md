@@ -193,5 +193,33 @@ Something to see is that it says Fail for DKIM. Probably best to wait a few minu
 After retrying from Alice:  
 ![Result7](./images/16-dkim-retest-pass-redacted.png) 
 With this one of the key lookup error, it was caused by some cache i guess or just took a few minutes and I didn't wait for it to reset for a few minutes.
+After looking at the DMARC report from this morning:  
+![Result8](./images/17a-dmarc-report-oct27-part1-redacted.png)  
+![Result9](./images/17b-dmarc-report-oct27-part2-redacted.png)  
+![Result10](./images/17c-dmarc-report-oct27-part3-redacted.png) 
+These three pictures show the messages that were sent with at least one pass that is aligned and each failure appears. 
 
 # Spoof test
+Start off by running Test-NetConnection gmail-smtp-in.1.google.com -Port 25 which should show the tcp side failed but ping worked. Solution was to turn phone hotspot on and run it again:  
+![Result11](./images/18-port25-open-hotspot-redacted.png) 
+Something to also do before the test is to create an account with SMTP2GO to make things easier. I created an account with the alice email and was able to get signed in. 
+Then go to Sending -> SMTP Users and get here:  
+![SMTP](./images/smtp.png)  
+Click on continue and click on create SMTP user, jot down the username and password and hit add SMTP user. Then to add alice, go to Sending -> Verified Senders like so:  
+![Sender](./images/sender.png)  
+And click on single sender emails, type in the Alice email to send a verify email.  
+![Verify2](./images/verify2.png)  
+Then once that is set, in a terminal or Visual Studio code run after getting the user and password: 
+export SMTP250="user"
+export SMTP250="password" 
+export MY_GMAIL="gmail" 
+And then run to see if it was set:  
+echo ${SMTP2GO_USER:+set} ${SMTP2GO_PASS:+set} ${MY_GMAIL:+set} and run the spoof_test.py script and hope to see it run without error by seeing code 250 which should bring this email in both: 
+![Lab](./images/lab.png)  
+And in Gmail: 
+![Result12](./images/gmail_headers_redacted.png)  
+And for Outlook:  
+![Outlook1](./images/bob_headers_redacted.png)  
+What this shows is that a policy might be set up for honoring DMARC records and only acts when the policy is set to p=quarantine or reject so its most likely set to p=none
+
+Next test will be to test with quarantine.
