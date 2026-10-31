@@ -231,3 +231,16 @@ After a few minutes run nslookup -type=TXT _dmarc.jon-maillab.org 1.1.1.1 and se
 Then in spoof_test.py change the subject line to: Unauthorized sender test 2 (quarantine) and run python spoof_test.py. 
 First go check Gmail to see if it pops up in junk/spam: 
 ![Gmail](./images/gmail.png)  
+And after checking the email shows this:  
+![Test2](./images/test2_quarantine_gmail_headers_redacted.png)  
+From this image after running the script it shows SPF and DKIM as still passing but DMARC still fails. So send a email from Alice to Gmail and get this result: 
+![Sent](./images/alice_to_gmail_dmarc_pass_redacted.png)  
+From this screenshot, it has p=Quarantine on it and is aligned with SPF. Since Bob's side hasn't been done yet or checked. Go to Defender -> Email & Collaboration -> Exchange Message Trace and click on Start a Trace with the alice email as the sender and bob as the recipient with a date time range of today, Halloween, and UTC time of 17:00 and 18:00 and hit search and notice this: 
+![Check](./images/check.png)  
+This shows the image was quarintined and is marked as not yet delievered. To see further click on the quarantine link and get here: 
+![Defender](./images/defender.png)  
+And after clicking on it: 
+![Detail](./images/detail.png)  
+What can be seen from looking at the above image is that the reason for the quarantine is because of phishing with the detection logic saying the DMARC is spoofed and only allows one per policy.  
+
+Next test is to do p=reject in Cloudflare.  
