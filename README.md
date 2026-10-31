@@ -222,4 +222,12 @@ And for Outlook:
 ![Outlook1](./images/bob_headers_redacted.png)  
 What this shows is that a policy might be set up for honoring DMARC records and only acts when the policy is set to p=quarantine or reject so its most likely set to p=none
 
-Next test will be to test with quarantine.
+Next test will be to test with quarantine.  
+First is to check Bob's inbox for the email that was sent over there and check the details for it from this:  
+![Result13](./images/21-bob-antispam-report-redacted.png) 
+What occured with this is that it marked dmarc as fail, recorded a 601 error that can be seen earlier, has a compauth=fail and this means the failure was recorded but not enforced since p=none requests no action and Microsoft's spoof detection did not categorize it. Usualy what 601 means is that the sending domain is accepted within the organization as self-to-self as intra-org spoofing.  
+The fix to enforce the quarantine is to edit the _dmarc TXT record in Cloudflare to include p=quarantine instead of p=none, save it and wait for a few minutes. 
+After a few minutes run nslookup -type=TXT _dmarc.jon-maillab.org 1.1.1.1 and see the p=quarantine is in the output.  
+Then in spoof_test.py change the subject line to: Unauthorized sender test 2 (quarantine) and run python spoof_test.py. 
+First go check Gmail to see if it pops up in junk/spam: 
+![Gmail](./images/gmail.png)  
